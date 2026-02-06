@@ -1,0 +1,472 @@
+<!--Formulario feito para a empresa Progredir-->
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RDO - Relatório Diário de Obra</title>
+
+    <style>
+        :root {
+            --primary: #1f2a36;
+            --secondary: #2f4052;
+            --accent: #0d6efd;
+            --border: #1f2a36;
+            --bg: #f2f4f7;
+            --thead: #e6ebf1;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background: var(--bg);
+            font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+            font-size: 12px;
+            color: var(--primary);
+        }
+
+        .page-container {
+            max-width: 210mm;
+            margin: 0 auto 20px;
+            background: #fff;
+            padding: 10mm;
+            border: 1px solid #cfd6de;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-bold {
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--border);
+            padding: 4px;
+            vertical-align: top;
+        }
+
+        th {
+            background: var(--thead);
+            font-size: 11px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: inherit;
+            outline: none;
+        }
+
+        input[readonly] {
+            background: #eef2f6;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        .section-title {
+            background: var(--secondary);
+            color: #fff;
+            text-align: center;
+            font-weight: 600;
+            padding: 4px;
+            border: 1px solid var(--border);
+            margin-top: 6px;
+        }
+
+        .disclaimer-box {
+            border: 1px solid var(--border);
+            background: #fffbe6;
+            padding: 8px;
+            font-size: 10px;
+            margin-bottom: 10px;
+        }
+
+        .no-print {
+            text-align: center;
+            margin-bottom: 15px;
+            position: sticky;
+            top: 0;
+            background: var(--bg);
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+
+        .btn-print {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-add {
+            background: #198754;
+            color: #fff;
+        }
+
+        .signatures {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .signature-box {
+            width: 45%;
+            text-align: center;
+        }
+
+        .sig-container {
+            position: relative;
+            width: 100%;
+            height: 80px;
+            border-bottom: 1px solid #000;
+            margin-bottom: 5px;
+        }
+
+        .sig-canvas {
+            width: 100%;
+            height: 100%;
+            border: 1px dashed #bbb;
+            background: #fff;
+            cursor: crosshair;
+        }
+
+        .btn-clear {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 10px;
+            padding: 2px 6px;
+            cursor: pointer;
+        }
+
+        td.text-center input[type="number"],
+        td.text-center input[type="date"] {
+            text-align: center;
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+            /* Prevent focus highlight on readonly inputs */
+
+            .page-container {
+                box-shadow: none;
+                border: none;
+                margin: 0;
+                padding: 0;
+                page-break-after: always;
+            }
+
+            .page-container:last-child {
+                page-break-after: auto;
+            }
+
+            .no-print,
+            .btn-clear {
+                display: none;
+            }
+
+            .sig-canvas {
+                border: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="no-print">
+        <button class="btn btn-print" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+        <button class="btn btn-add" onclick="addNewPage()">➕ Adicionar Nova Página</button>
+    </div>
+
+    <div id="document-area">
+        <div class="page-container">
+
+            <table>
+                <tr>
+                    <td colspan="4" class="text-center text-bold">
+                        RELATÓRIO DIÁRIO DE OBRA (RDO) - FISCALIZAÇÃO
+                    </td>
+                    <td class="text-center">
+                        <b>RDO Nº:</b><br>
+                        <input type="number">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="4">
+                        <b>OBRA:</b>
+                        <input type="text"
+                        <textarea placeholder="Informe o nome da edificação e a natureza do serviço a ser executado" rows="4" cols="60"></textarea>
+                    </td>
+                    <td class="text-center">
+                        <b>DATA:</b><br>
+                        <input type="date">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="5">
+                        <b>EMPRESA CONTRATADA:</b>
+                        <input type="text" readonly value="Progredir Manutenções Prediais">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="5">
+                        <b>LOCALIZAÇÃO:</b>
+                        <input type="text"
+                        <textarea placeholder="Endereço onde a obra será executada." rows="4" cols="60"></textarea>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="disclaimer-box">
+                <b>NOTA:</b>As informações aqui presentes são para fins de controle de produção e qualidade, e não de controle efetivo da operação no aspecto detalhado da execução ou gestão da obra.
+            </div>
+
+            <div class="section-title">1. CONDIÇÕES CLIMÁTICAS E JORNADA</div>
+
+            <table>
+                <tr>
+                    <th>PERÍODO</th>
+                    <th>CLARO</th>
+                    <th>NUBLADO</th>
+                    <th>CHUVOSO</th>
+                    <th>IMPRATICÁVEL</th>
+                </tr>
+                <tr>
+                    <td class="text-center text-bold">MANHÃ</td>
+                    <td class="text-center"><input type="radio" name="m1"></td>
+                    <td class="text-center"><input type="radio" name="m1"></td>
+                    <td class="text-center"><input type="radio" name="m1"></td>
+                    <td class="text-center"><input type="radio" name="m1"></td>
+                </tr>
+                <tr>
+                    <td class="text-center text-bold">TARDE</td>
+                    <td class="text-center"><input type="radio" name="t1"></td>
+                    <td class="text-center"><input type="radio" name="t1"></td>
+                    <td class="text-center"><input type="radio" name="t1"></td>
+                    <td class="text-center"><input type="radio" name="t1"></td>
+                </tr>
+            </table>
+
+            <div class="section-title">2. EFETIVO DE MÃO DE OBRA</div>
+
+            <table>
+                <tr>
+                    <th>FUNÇÃO</th>
+                    <th>PRÓPRIA (QTD)</th>
+                    <th>EMPREITEIRA (QTD)</th>
+                    <th>TOTAL HORAS</th>
+                </tr>
+                <tr><td>Engenheiro</td><td><input></td><td><input></td><td><input></td></tr>
+                <tr><td>Mestre de Obras</td><td><input></td><td><input></td><td><input></td></tr>
+                <tr><td>Profissionais</td><td><input></td><td><input></td><td><input></td></tr>
+                <tr><td>Auxiliares</td><td><input></td><td><input></td><td><input></td></tr>
+                <tr><td>Carpinteiros</td><td><input></td><td><input></td><td><input></td></tr>
+                <tr><td>Armadores</td><td><input></td><td><input></td><td><input></td></tr>
+                <tr><td>Eletricistas</td><td><input></td><td><input></td><td><input></td></tr>
+                <tr><td>Encanadores</td><td><input></td><td><input></td><td><input></td></tr>
+            </table>
+
+            <div class="section-title">3. EQUIPAMENTOS PRINCIPAIS</div>
+
+            <table>
+                <tr>
+                    <th>EQUIPAMENTO</th>
+                    <th>USADO?</th>
+                    <th>EQUIPAMENTO</th>
+                    <th>USADO?</th>
+                </tr>
+                <tr>
+                    <td>Betoneira</td>
+                    <td class="text-center"><input type="checkbox"></td>
+                    <td>Wap de Alta Pressão</td>
+                    <td class="text-center"><input type="checkbox"></td>
+                </tr>
+                <tr>
+                    <td>Andaimes</td>
+                    <td class="text-center"><input type="checkbox"></td>
+                    <td>Furadeira / Martelete</td>
+                    <td class="text-center"><input type="checkbox"></td>
+                </tr>
+                <tr>
+                    <td>Compressor</td>
+                    <td class="text-center"><input type="checkbox"></td>
+                    <td>Dispositivo de Içamento/Ancoragem</td>
+                    <td class="text-center"><input type="checkbox"></td>
+                </tr>
+                <tr>
+                    <td>Caçamba Estacionaria</td>
+                    <td class="text-center"><input type="checkbox"></td>
+                    <td>Cadeira de Descida</td>
+                    <td class="text-center"><input type="checkbox"></td>
+                </tr>
+            </table>
+
+            <div class="section-title">4. ATIVIDADES EXECUTADAS</div>
+
+            <table>
+                <tr>
+                    <td>
+                        <textarea style="height:90px"
+                        <textarea style="padding: 10px; height: 150px;" placeholder="Descreva aqui os serviços realizados no dia (ex: Elevação de alvenaria no 2º andar; Concretagem de pilar P3; Instalação de conduítes...)"></textarea>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="section-title">5. RECEBIMENTO DE MATERIAIS / ESTOQUE</div>
+
+            <table>
+                <tr>
+                    <td>
+                        <textarea style="height:90px"
+                        <textarea style="padding: 10px; height: 60px;" placeholder="Listar materiais recebidos no dia (Cimento, Areia, Aço, etc.) e nota fiscal, se houver."></textarea>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="section-title">6. OCORRÊNCIAS / OBSERVAÇÕES</div>
+
+            <table>
+                <tr>
+                    <td>
+                        <textarea style="height:90px"
+                        <textarea style="padding: 10px; height: 80px;" placeholder="Acidentes, visitas técnicas, paralisações, falta de energia, observações gerais."></textarea>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="signatures">
+                <div class="signature-box">
+                    <div class="sig-container">
+                        <canvas class="sig-canvas"></canvas>
+                        <button class="btn-clear" onclick="clearSig(this)">X</button>
+                    </div>
+                    <input placeholder="Responsável Técnico">
+                </div>
+
+                <div class="signature-box">
+                    <div class="sig-container">
+                        <canvas class="sig-canvas"></canvas>
+                        <button class="btn-clear" onclick="clearSig(this)">X</button>
+                    </div>
+                    <input placeholder="Fiscal / Contratante">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function initCanvas(c) {
+            c.width = c.offsetWidth;
+            c.height = c.offsetHeight;
+
+            const ctx = c.getContext("2d");
+            ctx.lineWidth = 2;
+
+            let draw = false;
+
+            const pos = e => {
+                const r = c.getBoundingClientRect();
+                return {
+                    x: (e.clientX || e.touches[0].clientX) - r.left,
+                    y: (e.clientY || e.touches[0].clientY) - r.top
+                };
+            };
+
+            c.onmousedown = e => {
+                draw = true;
+                const p = pos(e);
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+            };
+
+            c.onmousemove = e => {
+                if (!draw) return;
+                const p = pos(e);
+                ctx.lineTo(p.x, p.y);
+                ctx.stroke();
+            };
+
+            c.onmouseup = () => draw = false;
+
+            c.ontouchstart = e => {
+                e.preventDefault();
+                draw = true;
+                const p = pos(e);
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+            };
+
+            c.ontouchmove = e => {
+                e.preventDefault();
+                if (!draw) return;
+                const p = pos(e);
+                ctx.lineTo(p.x, p.y);
+                ctx.stroke();
+            };
+
+            c.ontouchend = () => draw = false;
+        }
+
+        function clearSig(b) {
+            const c = b.parentElement.querySelector("canvas");
+            c.getContext("2d").clearRect(0, 0, c.width, c.height);
+        }
+
+        function addNewPage() {
+            const area = document.getElementById("document-area");
+            const base = document.querySelector(".page-container");
+            const copy = base.cloneNode(true);
+
+            copy.querySelectorAll("input, textarea").forEach(i => {
+                if (i.hasAttribute("readonly")) return;
+
+                if (i.type === "checkbox" || i.type === "radio") {
+                    i.checked = false;
+                } else {
+                    i.value = "";
+                }  
+            });
+
+            area.appendChild(copy);
+            copy.querySelectorAll(".sig-canvas").forEach(initCanvas);
+        }
+
+        window.onload = () => {
+            document.querySelectorAll(".sig-canvas").forEach(initCanvas);
+        };
+    </script>
+
+</body>
+
+</html>
